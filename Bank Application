@@ -1,0 +1,90 @@
+import sys
+import datetime
+
+class customer:
+    '''Customer class to describe bank oplication'''
+    bankname = "Bharat Bank"
+    def __init__(self, name, balance=0.0, pin=None):
+        self.name = name
+        self.balance = balance
+        self.pin = pin
+        self.attempts = 3
+        self.last_attempt = None
+        
+    def deposit(self, amt, pin):
+        if amt % 100 != 0 and amt % 200 != 0 and amt % 500 != 0:
+            print("Amount should be multiple of 100, 200 or 500")
+            return
+        elif pin != self.pin:
+            self.attempts -= 1
+            if self.attempts == 0:
+                print("Maximum attempts reached for today. Please try again tomorrow.")
+                sys.exit()
+            else:
+                print("Invalid PIN. Please try again. Attempts left:", self.attempts)
+                self.last_attempt = datetime.datetime.now()
+                return
+        self.balance += amt
+        print("Balance After Deposit:", self.balance)
+        
+    def withdraw(self, amt, pin):
+        if amt > self.balance:
+            print("Insufficient funds....cannot perform this operation")
+            sys.exit()
+        elif amt % 100 != 0 and amt % 500 != 0 and amt % 200 != 0:
+            print("Amount should be multiple of 100, 500 or 200")
+            return
+        elif pin != self.pin:
+            self.attempts -= 1
+            if self.attempts == 0:
+                print("Maximum attempts reached for today. Please try again tomorrow.")
+                sys.exit()
+            else:
+                print("Invalid PIN. Please try again. Attempts left:", self.attempts)
+                self.last_attempt = datetime.datetime.now()
+                return
+        self.balance -= amt
+        print("Balance after withdraw:", self.balance)
+        
+    def check_balance(self, pin):
+        if pin != self.pin:
+            self.attempts -= 1
+            if self.attempts == 0:
+                print("Maximum attempts reached for today. Please try again tomorrow.")
+                sys.exit()
+            else:
+                print("Invalid PIN. Please try again. Attempts left:", self.attempts)
+                self.last_attempt = datetime.datetime.now()
+                return
+        print("Available balance:", self.balance)
+        
+print("Welcome To", customer.bankname)
+name = input("Enter your name: ")
+c = customer(name, pin="1234")
+
+while True:
+    print("d - Deposit\nw - Withdraw\nb - Check Balance\ne - Exit")
+    option = input("Choose your option: ")
+    
+    if option.lower() == "d":
+        amount = float(input("Enter amount to deposit: "))
+        pin = input("Enter your PIN: ")
+        if c.last_attempt and (datetime.datetime.now() - c.last_attempt).days == 0:
+            print("Maximum attempts reached for today. Please try again tomorrow.")
+            sys.exit()
+        c.deposit(amount, pin)
+        
+    elif option.lower() == "w":
+        amount = float(input("Enter amount to withdraw: "))
+        pin = input("Enter your PIN: ")
+        if c.last_attempt and (datetime.datetime.now() - c.last_attempt).days == 0:
+            print("Maximum attempts reached for today. Please try again tomorrow.")
+            sys.exit()
+        c.withdraw(amount, pin)
+        
+    elif option.lower() == "b":
+        pin = input("Enter your PIN: ")
+        if c.last_attempt and (datetime.datetime.now() - c.last_attempt).days == 0:
+            print("Maximum attempts reached for today. Please try again tomorrow.")
+            sys.exit()
+        c.check_balance(pin)
